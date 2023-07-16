@@ -138,22 +138,25 @@ export default function Home() {
   };
 
   const getTurns = async (dateQuery?: string, currentDate?: string) => {
-    setLoading(true);
-    const url =
-      `${baseUrl}/turns` +
-      (dateQuery ? `/${dateQuery}` : "") +
-      (currentDate ? `/${currentDate}` : "");
-    const response = await axios.get(url);
-    const { data } = response;
-    setCurrentDate(data.date);
-    setTurns(data.turns);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const url =
+        `${baseUrl}/turns` +
+        (dateQuery ? `/${dateQuery}` : "") +
+        (currentDate ? `/${currentDate}` : "");
+      const response = await axios.get(url);
+      const { data } = response;
+      setCurrentDate(data.date);
+      setTurns(data.turns);
+      setLoading(false);
+    } catch (error: any) {
+      setError(error.message);
+    }
   };
   const createTurn = async (force = true) => {
-    setLoading(true);
-    const url = `${baseUrl}/turn`;
-
     try {
+      setLoading(true);
+      const url = `${baseUrl}/turn`;
       const response = await axios.post(url, {
         refname: name,
         refphone: phone,
@@ -167,13 +170,13 @@ export default function Home() {
       }
       await getTurns(currentDate?.faDate);
     } catch (error: any) {
-      setError(error.response.data.error);
+      setError(error?.response?.data?.error || error.message);
     }
   };
   const editTurn = async () => {
-    setLoading(true);
-    const url = `${baseUrl}/turn`;
     try {
+      setLoading(true);
+      const url = `${baseUrl}/turn`;
       const response = await axios.put(url, {
         id: selectedItem?.id,
         refname: name,
@@ -186,7 +189,7 @@ export default function Home() {
       onCloseForm(true);
       await getTurns(currentDate?.faDate);
     } catch (error: any) {
-      setError(error.response.data.error);
+      setError(error?.response?.data?.error || error.message);
     }
   };
   const deleteTurn = async () => {
@@ -199,7 +202,7 @@ export default function Home() {
       onCloseForm(true);
       await getTurns(currentDate?.faDate);
     } catch (error: any) {
-      setError(error.response.data.error);
+      setError(error?.response?.data?.error || error.message);
     }
   };
 
@@ -214,7 +217,7 @@ export default function Home() {
       <main>
         <Container className="vh-100 d-flex flex-column" fluid="sm">
           {/* Header */}
-          <Row className=" py-2">
+          <Row className=" py-2 shadow-sm">
             <Col xs={"auto"}>
               <Button
                 variant="info"
@@ -266,14 +269,18 @@ export default function Home() {
                       lg={4}
                       xxl={3}
                     >
-                      <Card border="primary">
+                      <Card border="primary" className="shadow-sm">
                         <Card.Header className="text-primary">
                           {turn.date.split(" ")[1]}
                         </Card.Header>
                         <Card.Body>
                           <Card.Title className="d-flex gap-2 fs-6">
-                            <span className="d-block flex-grow-1">{turn.refphone}</span>
-                            <span className={`d-block flex-grow-1 ${styles["txt-break"]}`}>
+                            <span className="d-block flex-grow-1">
+                              {turn.refphone}
+                            </span>
+                            <span
+                              className={`d-block flex-grow-1 ${styles["txt-break"]}`}
+                            >
                               {turn.refname}
                             </span>
                           </Card.Title>
@@ -327,9 +334,10 @@ export default function Home() {
           placement="bottom"
           backdrop={false}
           onHide={onCloseForm}
+          className="border-0"
         >
           <Offcanvas.Header
-            className="p-2 bg-dark bg-gradient bg-opacity-25 text-success"
+            className="p-2 bg-dark bg-gradient bg-opacity-25 text-success rounded-top"
             closeButton
           >
             <Offcanvas.Title>
