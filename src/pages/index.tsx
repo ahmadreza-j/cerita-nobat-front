@@ -18,7 +18,7 @@ import {
 } from "react-bootstrap";
 import axios from "axios";
 
-const baseUrl = `http://192.168.1.103:8080`;
+const baseUrl = process.env.API_URL;
 
 type Phone = string | number;
 
