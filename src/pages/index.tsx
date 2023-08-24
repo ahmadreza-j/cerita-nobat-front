@@ -18,7 +18,9 @@ import {
 } from "react-bootstrap";
 import axios from "axios";
 
-const baseUrl = process.env.API_URL;
+import { normalizePhone, toPersianNumber } from "../helper/util";
+
+const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 type Phone = string | number;
 
@@ -49,8 +51,6 @@ export default function Home() {
   const [logOut, setLogOut] = useState<boolean>(false);
 
   const [phone, setPhone] = useState<Phone>("");
-  // const [hour, setHour] = useState<string>(hours[0]);
-  // const [minute, setMinute] = useState<string>(mins[0]);
   const [time, setTime] = useState<string>(times[0]);
   const [name, setName] = useState<string | undefined>("");
   const [description, setDescription] = useState<string | undefined>("");
@@ -70,7 +70,7 @@ export default function Home() {
   useEffect(() => {
     let { tel } = router.query;
     if (typeof tel === "string") {
-      setPhone(tel);
+      setPhone(normalizePhone(tel));
       setCreateModal(true);
     }
     getTurns();
@@ -111,8 +111,6 @@ export default function Home() {
   const onSelectTurnItem = (turn: Turn) => {
     setSelectedItem(turn);
     setPhone(turn.refphone);
-    // setHour(turn.date.split(" ")[1].split(":")[0]);
-    // setMinute(turn.date.split(" ")[1].split(":")[1]);
     setTime(turn.date.split(" ")[1]);
     setName(turn.refname);
     setDescription(turn.description);
@@ -121,8 +119,6 @@ export default function Home() {
 
   const emptyForm = () => {
     setPhone("");
-    // setHour(hours[0]);
-    // setMinute(mins[0]);
     setTime(times[0]);
     setName("");
     setDescription("");
@@ -159,7 +155,7 @@ export default function Home() {
       const url = `${baseUrl}/turn`;
       const response = await axios.post(url, {
         refname: name,
-        refphone: phone,
+        refphone: normalizePhone(phone.toString()),
         user: user,
         description: description,
         date: currentDate?.faDate + " " + time,
@@ -180,7 +176,7 @@ export default function Home() {
       const response = await axios.put(url, {
         id: selectedItem?.id,
         refname: name,
-        refphone: phone,
+        refphone: normalizePhone(phone.toString()),
         user: user,
         description: description,
         date: currentDate?.faDate + " " + time,
@@ -217,26 +213,31 @@ export default function Home() {
       <main>
         <Container className="vh-100 d-flex flex-column" fluid="sm">
           {/* Header */}
-          <Row className=" py-2 shadow-sm">
+          <Row className="py-2">
             <Col xs={"auto"}>
               <Button
                 variant="info"
+                className="py-2 py-sm-3"
                 onClick={() => getTurns("next", currentDate?.faDate)}
               >
-                <span className="fw-bold">{"<"}</span>
+                <span className="px-0 px-sm-2 px-md-4 text-warning">
+                  <i className="bi bi-chevron-double-right"></i>
+                </span>
               </Button>
             </Col>
             <Col className="px-0">
               <Button
-                className="w-100"
+                className="w-100 py-2 py-sm-3"
                 variant="primary"
                 onClick={() => getTurns()}
               >
-                <span className="text-warning">{currentDate?.day || "-"}</span>
-                <span className="px-2 fw-bold" dir="ltr">
-                  {currentDate?.faDate || "-"}
+                <span className={`text-warning ${styles.fss}`}>
+                  {currentDate?.day || "-"}
                 </span>
-                <span className="text-warning">
+                <span className={`px-2 fw-bold ${styles.fss}`} dir="ltr">
+                  {toPersianNumber(currentDate?.faDate || "-")}
+                </span>
+                <span className={`text-warning ${styles.fss}`}>
                   {currentDate?.month || "-"}
                 </span>
               </Button>
@@ -244,9 +245,12 @@ export default function Home() {
             <Col xs={"auto"}>
               <Button
                 variant="info"
+                className="py-2 py-sm-3"
                 onClick={() => getTurns("prev", currentDate?.faDate)}
               >
-                <span className="fw-bold">{">"}</span>
+                <span className="px-0 px-sm-2 px-md-4 text-warning">
+                  <i className="bi bi-chevron-double-left"></i>
+                </span>
               </Button>
             </Col>
           </Row>
@@ -269,22 +273,30 @@ export default function Home() {
                       lg={4}
                       xxl={3}
                     >
-                      <Card border="primary" className="shadow-sm">
-                        <Card.Header className="text-primary">
-                          {turn.date.split(" ")[1]}
+                      <Card
+                        border="primary"
+                        className="shadow-sm h-100"
+                      >
+                        <Card.Header className="text-primary fw-bold">
+                          <i className="bi bi-clock me-2"></i>
+                          {toPersianNumber(turn.date.split(" ")[1])}
                         </Card.Header>
-                        <Card.Body>
-                          <Card.Title className="d-flex gap-2 fs-6">
-                            <span className="d-block flex-grow-1">
-                              {turn.refphone}
-                            </span>
-                            <span
-                              className={`d-block flex-grow-1 ${styles["txt-break"]}`}
-                            >
+                        <Card.Body className="d-flex flex-column justify-content-between">
+                          <Card.Title className="d-flex justify-content-between gap-2 fs-6">
+                            <span className={`d-block ${styles["txt-break"]}`}>
                               {turn.refname}
                             </span>
+                            <span className="d-block">
+                              <a
+                                href={`tel:${turn.refphone}`}
+                                className="link-dark"
+                              >
+                                {turn.refphone}
+                              </a>
+                              <i className="bi bi-telephone ms-1"></i>
+                            </span>
                           </Card.Title>
-                          <Card.Text className="d-flex justify-content-between gap-2">
+                          <Card.Text className="d-flex justify-content-between align-items-end gap-2">
                             <span>{turn.description}</span>
                             <Button
                               variant="outline-success"
@@ -310,7 +322,7 @@ export default function Home() {
           {/* FAB */}
           <Button
             variant="success"
-            className={`${styles.fab} position-fixed rounded-5 opacity-50`}
+            className={`${styles.fab} position-fixed rounded-circle opacity-50`}
             onClick={() => setCreateModal(true)}
           >
             +
@@ -341,8 +353,10 @@ export default function Home() {
             closeButton
           >
             <Offcanvas.Title>
-              <span className="mx-2">{currentDate?.day}</span>
-              <span>{currentDate?.faDate}</span>
+              <span className="mx-2" dir="ltr">
+                {currentDate?.day}
+              </span>
+              <span>{toPersianNumber(currentDate?.faDate || "-")}</span>
             </Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body className="pt-1 bg-dark bg-gradient bg-opacity-25">
@@ -357,7 +371,7 @@ export default function Home() {
                     >
                       {times.map((t) => (
                         <option key={t} value={t}>
-                          {t}
+                          {toPersianNumber(t)}
                         </option>
                       ))}
                     </Form.Select>
