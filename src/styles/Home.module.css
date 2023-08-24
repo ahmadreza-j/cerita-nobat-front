@@ -3,6 +3,7 @@
   height: 56px;
   right: 16px;
   bottom: 16px;
+  font-size: 24px;
 }
 
 .setting {
@@ -13,7 +14,7 @@
 }
 
 .txt-break {
-  word-break: break-all;
+  word-break: keep-all;
 }
 
 .pf {
@@ -22,4 +23,18 @@
 
 .pff {
   padding-bottom: 30vh;
+}
+
+@media (min-width: 768px) {
+  .fab {
+    width: 80px;
+    height: 80px;
+    font-size: 48px;
+  }
+}
+
+@media (max-width: 375px) {
+  .fss {
+    font-size: 12px;
+  }
 }
