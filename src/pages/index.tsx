@@ -15,6 +15,7 @@ import {
   Offcanvas,
   Card,
   Toast,
+  Image,
 } from "react-bootstrap";
 import axios from "axios";
 
@@ -217,10 +218,10 @@ export default function Home() {
             <Col xs={"auto"}>
               <Button
                 variant="info"
-                className="py-2 py-sm-3"
+                className="py-2 py-sm-3 bg-gradient"
                 onClick={() => getTurns("next", currentDate?.faDate)}
               >
-                <span className="px-0 px-sm-2 px-md-4 text-warning">
+                <span className="px-0 px-sm-2 px-md-4 text-success">
                   <i className="bi bi-chevron-double-right"></i>
                 </span>
               </Button>
@@ -245,10 +246,10 @@ export default function Home() {
             <Col xs={"auto"}>
               <Button
                 variant="info"
-                className="py-2 py-sm-3"
+                className="py-2 py-sm-3 bg-gradient"
                 onClick={() => getTurns("prev", currentDate?.faDate)}
               >
-                <span className="px-0 px-sm-2 px-md-4 text-warning">
+                <span className="px-0 px-sm-2 px-md-4 text-success">
                   <i className="bi bi-chevron-double-left"></i>
                 </span>
               </Button>
@@ -273,10 +274,7 @@ export default function Home() {
                       lg={4}
                       xxl={3}
                     >
-                      <Card
-                        border="primary"
-                        className="shadow-sm h-100"
-                      >
+                      <Card border="primary" className="shadow-sm h-100">
                         <Card.Header className="text-primary fw-bold">
                           <i className="bi bi-clock me-2"></i>
                           {toPersianNumber(turn.date.split(" ")[1])}
@@ -311,8 +309,13 @@ export default function Home() {
                     </Col>
                   ))
                 ) : (
-                  <div>
-                    <span>نوبتی ثبت نشده است</span>
+                  <div className="h-100 align-middle d-flex flex-column justify-content-center align-items-center">
+                    <Image
+                      src="/assets/images/empty.png"
+                      alt="empty list"
+                      className="h-100 mw-100"
+                    />
+                    <span className="mt-4 fs-4">نوبتی ثبت نشده است !</span>
                   </div>
                 )}
               </Row>
@@ -349,111 +352,108 @@ export default function Home() {
           className="border-0"
         >
           <Offcanvas.Header
-            className="p-2 bg-dark bg-gradient bg-opacity-25 text-success rounded-top"
+            className={`py-2 bg-dark bg-gradient text-warning rounded-top container ${styles.offcanvasHeader}`}
             closeButton
           >
             <Offcanvas.Title>
+              <i className="bi bi-calendar3"></i>
               <span className="mx-2" dir="ltr">
                 {currentDate?.day}
               </span>
               <span>{toPersianNumber(currentDate?.faDate || "-")}</span>
             </Offcanvas.Title>
           </Offcanvas.Header>
-          <Offcanvas.Body className="pt-1 bg-dark bg-gradient bg-opacity-25">
-            <Form>
-              <Container fluid>
-                <Row className="gap-2 mb-2">
-                  <Col className="px-0">
-                    <Form.Select
-                      size="sm"
-                      value={time}
-                      onChange={(e) => setTime(e.target.value)}
-                    >
-                      {times.map((t) => (
-                        <option key={t} value={t}>
-                          {toPersianNumber(t)}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  </Col>
-                  <Col className="px-0">
-                    <Form.Control
-                      type="tel"
-                      size="sm"
-                      placeholder="شماره تماس"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="text-center"
-                    />
-                  </Col>
-                </Row>
-                <Row className="gap-2 mb-2">
-                  <Col className="px-0">
-                    <Form.Control
-                      type="text"
-                      size="sm"
-                      placeholder="نام"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                  </Col>
-                  <Col className="px-0">
-                    <Form.Control
-                      type="text"
-                      size="sm"
-                      placeholder="توضیحات"
-                      className="mb-2"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                    />
-                  </Col>
-                </Row>
-                <Row className="gap-2">
-                  {selectedItem ? (
-                    <>
-                      <Col className="px-0 ">
-                        <Button
-                          className="w-100"
-                          variant="success"
-                          onClick={editTurn}
-                        >
-                          ویرایش
-                        </Button>
-                      </Col>
-                      <Col className="px-0 ">
-                        <Button
-                          className="w-100"
-                          variant="danger"
-                          onClick={deleteTurn}
-                        >
-                          حذف
-                        </Button>
-                      </Col>
-                    </>
-                  ) : (
-                    <>
-                      <Col className="px-0 ">
-                        <Button
-                          className="w-100"
-                          variant="primary"
-                          onClick={() => createTurn(true)}
-                        >
-                          ثبت
-                        </Button>
-                      </Col>
-                      <Col className="px-0 ">
-                        <Button
-                          className="w-100"
-                          variant="info"
-                          onClick={() => createTurn(false)}
-                        >
-                          ثبت و کپی
-                        </Button>
-                      </Col>
-                    </>
-                  )}
-                </Row>
-              </Container>
+          <Offcanvas.Body className="pt-1 bg-dark bg-gradient bg-opacity-10 container border-start border-end border-2 border-dark">
+            <Form className="h-100 d-flex flex-column justify-content-between">
+              <Row>
+                <Col className="p-1" xs={6}>
+                  <Form.Select
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                  >
+                    {times.map((t) => (
+                      <option key={t} value={t}>
+                        {toPersianNumber(t)}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Col>
+                <Col className="p-1" xs={6}>
+                  <Form.Control
+                    type="tel"
+                    placeholder="شماره تماس"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="text-center"
+                  />
+                </Col>
+                <Col className="p-1" xs={6}>
+                  <Form.Control
+                    type="text"
+                    placeholder="نام"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </Col>
+                <Col className="p-1" xs={6}>
+                  <Form.Control
+                    type="text"
+                    placeholder="توضیحات"
+                    className="mb-2"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                </Col>
+              </Row>
+              <Row>
+                {selectedItem ? (
+                  <>
+                    <Col className="p-1 ">
+                      <Button
+                        className="w-100"
+                        variant="success"
+                        onClick={editTurn}
+                      >
+                        <i className="bi bi-pencil-square me-1"></i>
+                        ویرایش
+                      </Button>
+                    </Col>
+                    <Col className="p-1 ">
+                      <Button
+                        className="w-100"
+                        variant="danger"
+                        onClick={deleteTurn}
+                      >
+                        <i className="bi bi-trash me-1"></i>
+                        حذف
+                      </Button>
+                    </Col>
+                  </>
+                ) : (
+                  <>
+                    <Col className="p-1">
+                      <Button
+                        className="w-100"
+                        variant="primary"
+                        onClick={() => createTurn(true)}
+                      >
+                        <i className="bi bi-check2-square me-1"></i>
+                        ثبت
+                      </Button>
+                    </Col>
+                    <Col className="p-1">
+                      <Button
+                        className="w-100"
+                        variant="info"
+                        onClick={() => createTurn(false)}
+                      >
+                        <i className="bi bi-clipboard-check me-1"></i>
+                        ثبت و کپی
+                      </Button>
+                    </Col>
+                  </>
+                )}
+              </Row>
             </Form>
           </Offcanvas.Body>
         </Offcanvas>
