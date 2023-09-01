@@ -29,6 +29,18 @@
   background-color: rgb(255, 227, 134) !important;
 }
 
+.loading {
+  position: fixed;
+  height: 100vh;
+  width: 100%;
+  background-image: url('/assets/images/loading.gif');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.4;
+  z-index: 1046;
+}
+
 @media (min-width: 768px) {
   .fab {
     width: 80px;

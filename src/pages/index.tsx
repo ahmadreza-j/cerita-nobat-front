@@ -56,7 +56,7 @@ export default function Home() {
   const [name, setName] = useState<string | undefined>("");
   const [description, setDescription] = useState<string | undefined>("");
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [turns, setTurns] = useState<Turn[]>([]);
 
   const [error, setError] = useState<string>("");
@@ -147,6 +147,7 @@ export default function Home() {
       setTurns(data.turns);
       setLoading(false);
     } catch (error: any) {
+      setLoading(false);
       setError(error.message);
     }
   };
@@ -167,6 +168,7 @@ export default function Home() {
       }
       await getTurns(currentDate?.faDate);
     } catch (error: any) {
+      setLoading(false);
       setError(error?.response?.data?.error || error.message);
     }
   };
@@ -186,6 +188,7 @@ export default function Home() {
       onCloseForm(true);
       await getTurns(currentDate?.faDate);
     } catch (error: any) {
+      setLoading(false);
       setError(error?.response?.data?.error || error.message);
     }
   };
@@ -199,6 +202,7 @@ export default function Home() {
       onCloseForm(true);
       await getTurns(currentDate?.faDate);
     } catch (error: any) {
+      setLoading(false);
       setError(error?.response?.data?.error || error.message);
     }
   };
@@ -212,7 +216,12 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Container className="vh-100 d-flex flex-column" fluid="sm">
+        {loading && <div className={styles.loading}></div>}
+
+        <Container
+          className="vh-100 d-flex flex-column position-relative"
+          fluid="sm"
+        >
           {/* Header */}
           <Row className="py-2">
             <Col xs={"auto"}>
@@ -308,6 +317,8 @@ export default function Home() {
                       </Card>
                     </Col>
                   ))
+                ) : loading ? (
+                  <></>
                 ) : (
                   <div className="h-100 align-middle d-flex flex-column justify-content-center align-items-center">
                     <Image
