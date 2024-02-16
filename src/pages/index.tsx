@@ -19,7 +19,11 @@ import {
 } from "react-bootstrap";
 import axios from "axios";
 
-import { normalizePhone, toPersianNumber } from "../helper/util";
+import {
+  normalizePhone,
+  toPersianNumber,
+  toPersianCalendar,
+} from "../helper/util";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -184,7 +188,7 @@ export default function Home() {
       const response = await axios.post(url, {
         refname: name,
         refphone: normalizePhone(phone.toString()),
-        user: user,
+        user: user.slice(-4),
         description: description,
         date: currentDate?.faDate + " " + time,
       });
@@ -206,7 +210,7 @@ export default function Home() {
         id: selectedItem?.id,
         refname: name,
         refphone: normalizePhone(phone.toString()),
-        user: user,
+        user: user.slice(-4),
         description: description,
         date: currentDate?.faDate + " " + time,
       });
@@ -311,8 +315,15 @@ export default function Home() {
                     >
                       <Card border="primary" className="shadow-sm h-100">
                         <Card.Header className="text-primary fw-bold">
-                          <i className="bi bi-clock me-2"></i>
-                          {toPersianNumber(turn.date.split(" ")[1])}
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div>
+                              <i className="bi bi-clock me-2"></i>
+                              {toPersianNumber(turn.date.split(" ")[1])}
+                            </div>
+                            <div className={`text-dark ${styles.fsxs}`}>
+                              {toPersianCalendar(turn.currenttime)}
+                            </div>
+                          </div>
                         </Card.Header>
                         <Card.Body className="d-flex flex-column justify-content-between">
                           <Card.Title className="d-flex justify-content-between gap-2 fs-6">
@@ -329,16 +340,30 @@ export default function Home() {
                               <i className="bi bi-telephone ms-1"></i>
                             </span>
                           </Card.Title>
-                          <Card.Text className="d-flex justify-content-between align-items-end gap-2">
-                            <span>{turn.description}</span>
-                            <Button
-                              variant="outline-success"
-                              size="sm"
-                              onClick={() => onSelectTurnItem(turn)}
-                            >
-                              ویرایش
-                            </Button>
-                          </Card.Text>
+                          <Card.Body className="p-0">
+                            {turn.description && (
+                              <div className="d-block my-2">
+                                {turn.description}
+                              </div>
+                            )}
+                            <div className="d-flex justify-content-between">
+                              <Button
+                                variant="outline-info"
+                                size="sm"
+                                onClick={() => alert("هنوز فعال نیست")}
+                              >
+                                نظرسنجی
+                                <i className="bi bi-send mx-1"></i>
+                              </Button>
+                              <Button
+                                variant="outline-success"
+                                size="sm"
+                                onClick={() => onSelectTurnItem(turn)}
+                              >
+                                ویرایش
+                              </Button>
+                            </div>
+                          </Card.Body>
                         </Card.Body>
                       </Card>
                     </Col>
