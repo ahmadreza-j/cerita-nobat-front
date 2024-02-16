@@ -74,7 +74,7 @@ export default function Home() {
       setPhone(normalizePhone(tel));
       setCreateModal(true);
     }
-    getTurns();
+    if (checkLogin()) getTurns();
   }, [router]);
 
   const handleClearQuery = () => {
@@ -85,17 +85,30 @@ export default function Home() {
   const checkLogin = () => {
     const user = localStorage.getItem("user");
     if (user) {
-      setUser(JSON.parse(user));
+      const parsedUser = JSON.parse(user);
+      setUser(parsedUser);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${parsedUser}`;
+      axios.defaults.headers.post["Authorization"] = `Bearer ${parsedUser}`;
+
       return true;
     }
     setUserModal(true);
     return false;
   };
 
-  const handleSetLoginData = () => {
-    localStorage.setItem("user", JSON.stringify(loginData));
-    setUser(loginData);
-    setUserModal(false);
+  const handleSetLoginData = async () => {
+    if (loginData) {
+      const loginResponse = await tryLogin();
+      const userId = loginResponse.id;
+      if (userId) {
+        localStorage.setItem("user", JSON.stringify(userId));
+        setUser(userId);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${userId}`;
+        axios.defaults.headers.post["Authorization"] = `Bearer ${userId}`;
+        setUserModal(false);
+        getTurns();
+      }
+    }
   };
 
   const handleLogOut = () => {
@@ -134,6 +147,19 @@ export default function Home() {
     setCreateModal(false);
   };
 
+  const tryLogin = async () => {
+    try {
+      const url = `${baseUrl}/login`;
+      const response = await axios.post(url, {
+        userId: loginData,
+      });
+      const { data } = response;
+      return data;
+    } catch (error: any) {
+      setError(error.message);
+      return false;
+    }
+  };
   const getTurns = async (dateQuery?: string, currentDate?: string) => {
     try {
       setLoading(true);
@@ -479,7 +505,9 @@ export default function Home() {
               type="text"
               placeholder="شناسه کاربری"
               value={loginData}
-              onChange={(e) => setLoginData(e.target.value)}
+              onChange={(e) =>
+                setLoginData(e.target.value.toLowerCase().trim())
+              }
             />
           </Modal.Body>
           <Modal.Footer>
