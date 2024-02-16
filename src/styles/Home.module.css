@@ -41,6 +41,10 @@
   z-index: 1046;
 }
 
+.fsxs {
+  font-size: 12px;
+}
+
 @media (min-width: 768px) {
   .fab {
     width: 80px;
