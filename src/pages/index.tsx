@@ -236,6 +236,19 @@ export default function Home() {
       setError(error?.response?.data?.error || error.message);
     }
   };
+  const sendCommentSms = async (turn: Turn) => {
+    setLoading(true);
+    const url = `${baseUrl}/commentSms/${turn.id}`;
+
+    try {
+      const response = await axios.put(url);
+      const { data } = response;
+      await getTurns(currentDate?.faDate);
+    } catch (error: any) {
+      setLoading(false);
+      setError(error?.response?.data?.error || error.message);
+    }
+  };
 
   return (
     <>
@@ -350,10 +363,14 @@ export default function Home() {
                               <Button
                                 variant="outline-info"
                                 size="sm"
-                                onClick={() => alert("هنوز فعال نیست")}
+                                onClick={() => sendCommentSms(turn)}
                               >
                                 نظرسنجی
-                                <i className="bi bi-send mx-1"></i>
+                                {turn.status.includes("commentSms") ? (
+                                  <i className="bi bi-envelope-check-fill mx-1"></i>
+                                ) : (
+                                  <i className="bi bi-send mx-1"></i>
+                                )}
                               </Button>
                               <Button
                                 variant="outline-success"
